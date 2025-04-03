@@ -15,7 +15,7 @@ export async function mergeApplicationData(jobs, pool) {
 
     const responses = await Promise.all(queries);
 
-    responses.forEach((response, tableIndex) => {
+    responses.forEach((response) => {
         const groupedData = response.rows.reduce((acc, row) => {
             if (!acc[row.id]) acc[row.id] = [];
             acc[row.id].push(row);

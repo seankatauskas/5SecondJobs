@@ -1,6 +1,6 @@
 'use server'
 
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { Pool } from '@neondatabase/serverless';
 import { mergeApplicationData } from '@/app/lib/appApiHelpers'
 
