@@ -1,7 +1,7 @@
 'use client'
 
 export async function fetchSearchApplications({ pageParam }) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications/search/?cursor=${pageParam}`, {
+    const response = await fetch(`/api/applications/search/?cursor=${pageParam}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -9,7 +9,7 @@ export async function fetchSearchApplications({ pageParam }) {
 }
 
 export async function fetchReviewedApplications({ pageParam }) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications/reviewed/?cursor=${pageParam}`, {
+    const response = await fetch(`/api/applications/reviewed/?cursor=${pageParam}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
@@ -17,7 +17,7 @@ export async function fetchReviewedApplications({ pageParam }) {
 }
 
 export async function fetchCompletedApplications({ pageParam }) {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications/completed/?cursor=${pageParam}`, {
+    const response = await fetch(`/api/applications/completed/?cursor=${pageParam}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
