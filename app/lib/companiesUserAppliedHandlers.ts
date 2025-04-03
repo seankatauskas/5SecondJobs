@@ -1,7 +1,7 @@
 'use client'
 
 export async function updateUserCompanyApplied (company_id: string, job_id: string) {
-    const response = await fetch('http://localhost:3000/api/companies', { 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies`, { 
         method: 'PUT', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -13,7 +13,7 @@ export async function updateUserCompanyApplied (company_id: string, job_id: stri
 
 
 export async function removeUserCompanyApplied (company_id: string) {
-    const response = await fetch('http://localhost:3000/api/companies/remove', { 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/companies/remove`, { 
         method: 'DELETE', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

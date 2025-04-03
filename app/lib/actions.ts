@@ -5,7 +5,7 @@ import { Pool } from '@neondatabase/serverless';
 import { mergeApplicationData, encodeCursor, decodeCursor } from '@/app/lib/appApiHelpers'
 
 export async function fetchGuestApplications() {
-    const response = await fetch('http://localhost:3000/api/applications/guest', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications/guest`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });

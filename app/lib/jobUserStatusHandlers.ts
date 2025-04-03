@@ -1,7 +1,7 @@
 'use client'
 
 export async function addUserJobStatus (job_id: string, status: string) {
-    const response = await fetch('http://localhost:3000/api/jobs', {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/jobs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -14,7 +14,7 @@ export async function addUserJobStatus (job_id: string, status: string) {
 };
 
 export async function changeJobUserStatus (job_id: string, status: string) {
-    const response = await fetch('http://localhost:3000/api/jobs/update', { 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/jobs/update`, { 
         method: 'PATCH', 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
