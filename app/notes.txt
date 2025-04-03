@@ -1,0 +1,67 @@
+User Behavoir:
+The main user behavoir is either pressing review or delete for every application on the main search page.
+
+Desired Movement:
+When someone presses review or delete on app it disappears flashing yellow for review and green for completed.
+Then the app below that will move up and open expanded.
+    Stop rendering the decided app and then also mark in the database the new status for a particular application.
+        - Do this async so as not to slow down other actions
+    Rewrite the api for page fetching to reflect only the apps a user has not decided on.
+        Each user has a personal decided database with id as primary key, decided boolean, decided category.
+        Each user has a database for previous companies applied to and the job id associated
+
+
+User Authentication:
+A user not in an authenticated session is rendered a single page request with reduced functionalities and introduction card.
+
+Demo Interface (Unauthenticated):
+    Navbar: search, review, completed, and the setting icons are not accessible and logout is signin instead that redirects to an authentication page
+    First card is an introduction and resembles a real application card.
+        The card introduces all the functionalities of the full app and showcases all action icons and instructs the user to login. 
+    Cards: One page request of cards is displayed and SSR. Once hitting the bottom in the scroll a banner appears prompting the user to login.
+        The cards only have the go to link action/button available
+    After Login: The user is taken to /jobs with the feed of non-decided jobs
+
+Extras:
+    - Skeletons for base card and expandable card
+        Difficulty is integrating that with react query
+    - Dark mode toggle on navbar with moon icon
+    - Arrow mode to enable navigation and actions only with arrows and key such as "d" for delete and "r" for review
+    - adding filtering for experience level
+
+Necessary:
+    - Prefetching with react router
+    - fix api for guest applications to not return a next cursor
+    - wrap both functions and skills divs properly so they work on small screens
+    - fix cards to not expand if clicking on a particular element
+
+Next Steps:
+how do I create authentication for my users and hold a database for everyone?
+
+
+
+
+
+
+
+
+Introduction Card:
+    
+The whole point is to target the applications that you like and filter out the rest in a efficient manner.
+
+
+Filter Out the Noise, Discover Roles That Fit You
+A job tracker that enables you to decide whether to pursue a role in 5 seconds.
+
+Previously applied feature.
+List of companies applied to.
+
+
+relevant jobs
+    
+
+
+Filter noise and find your roles.
+Filter Noise.
+Track Applications.
+
