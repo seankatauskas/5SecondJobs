@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { BaseCardComponent, TopExpandableCardComponent, BottomExpandableCardComponent } from "@/app/ui/cards"
 import { data } from "@/app/lib/demoCardData"

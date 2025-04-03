@@ -1,5 +1,3 @@
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, Cog8ToothIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import SignIn from '@/app/ui/SignIn'
 

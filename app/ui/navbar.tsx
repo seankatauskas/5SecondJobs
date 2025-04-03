@@ -1,5 +1,4 @@
 import { auth } from '@/auth'
-import Link from 'next/link'
 import UserNavbar from './UserNavbar'
 import GuestNavbar from './GuestNavbar'
 

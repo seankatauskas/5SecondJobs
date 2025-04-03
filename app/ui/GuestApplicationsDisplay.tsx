@@ -1,7 +1,5 @@
 "use client"
 
-import { motion, useTransform, useScroll } from "framer-motion"
-import { useRef } from "react"
 import { IntroductionCard } from "@/app/ui/IntroductionCard"
 import ExpandingCard from "@/app/ui/ExpandingCard"
 

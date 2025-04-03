@@ -68,7 +68,6 @@ export default function ApplicationsDisplay({ pageType }) {
         <React.Fragment key={i}>
           <div className='flex flex-col'>
             {group.data.map((application) => {
-              const isRemoving = application.id === removingId
               return (
                 <motion.div
                   key={application.id}

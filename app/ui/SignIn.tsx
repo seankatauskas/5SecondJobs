@@ -1,6 +1,6 @@
 import { signIn } from "@/auth"
  
-export default function SignIn({ className }) {
+export default function SignIn() {
   return (
     <form
       action={async () => {

@@ -1,6 +1,4 @@
-import { lusitana } from '@/app/ui/fonts';
 import { motion } from "framer-motion";
-import { useState } from 'react';
 import ColorHash from 'color-hash'
 import { ArrowTopRightOnSquareIcon, ArchiveBoxIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/solid'
 
@@ -109,7 +107,7 @@ export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, dem
 export function UserActionsComponent({ pageType = 'guest', data, handleRemoval }) {
     switch (pageType) {
         case 'guest':
-            return <GuestActionsComponent data={data} />
+            return <GuestActionsComponent />
         case 'search':
             return <SearchActionsComponent data={data} handleRemoval={handleRemoval} />
         case 'reviewed':
@@ -121,7 +119,7 @@ export function UserActionsComponent({ pageType = 'guest', data, handleRemoval }
     }
 }
 
-export function GuestActionsComponent({ data }) {
+export function GuestActionsComponent() {
     return (
         <div className="block md:flex items-baseline text-gray-500 my-auto">
             <div className="flex">
@@ -325,13 +323,6 @@ function postedTimeAgo(utcSeconds) {
     } else {
         return "Posted over a month ago";
     }
-}
-
-function convertUtcSecondsToDate(utcSeconds) {
-    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const date = new Date(utcSeconds * 1000);
-    const options = { timeZone: userTimeZone, month: 'numeric', day: '2-digit', year: 'numeric' };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 
 function constructSalaryText(minSalary, maxSalary) {

@@ -1,6 +1,4 @@
-import { lusitana } from '@/app/ui/fonts';
-import { useState } from 'react';
-import { ArrowTopRightOnSquareIcon, ArchiveBoxIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/solid'
+import { ArchiveBoxIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/solid'
 
 export function IntroductionCard({ className}) {
      
