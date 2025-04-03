@@ -15,7 +15,11 @@ export async function GET(req: NextRequest) {
         const data = await getSearchApplications(session, currentCursor)
         return NextResponse.json(data);
     } catch (error) {
-        return NextResponse.json({ error: `Failed to fetch jobs: ${error.message}` }, { status: 500 });
+        if (error instanceof Error) {
+            return NextResponse.json({ error: `Failed to fetch jobs: ${error.message}` }, { status: 500 });
+        } else {
+            return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+        }
     }
 }
 

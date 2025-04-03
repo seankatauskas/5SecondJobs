@@ -31,7 +31,11 @@ export async function prefetchApplications(pageType, pageParam) {
         const data = await fetchFunction(session, currentCursor)
         return data
     } catch (error) {
-        throw new Error(`Failed to fetch jobs: ${error.message}`)
+        if (error instanceof Error) {
+            throw new Error(`Failed to fetch jobs: ${error.message}`);
+        } else {
+            throw new Error("Failed to fetch jobs: An unknown error occurred");
+        }
     }
 }
 

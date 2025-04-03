@@ -12,6 +12,7 @@ export async function DELETE(req: Request) {
 
   const { company_id } = await req.json()
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const userId = session.user?.id
 
   try {
     const { rows: currentRows } = await pool.query(
@@ -20,7 +21,7 @@ export async function DELETE(req: Request) {
         FROM user_companies_applied
         WHERE user_id = $1 AND company_id = $2
       `,
-      [session.user.id, company_id]
+      [userId, company_id]
     )
 
     if (currentRows.length === 0) {
@@ -39,7 +40,7 @@ export async function DELETE(req: Request) {
         ORDER BY user_jobs.updated_at DESC
         LIMIT 1
         `,
-        [session.user.id, company_id]
+        [userId, company_id]
       )
 
       if (jobRows.length === 0) {
@@ -54,7 +55,7 @@ export async function DELETE(req: Request) {
           SET count = count - 1, last_application_id = $1, last_applied = $2
           WHERE user_id = $3 AND company_id = $4
         `,
-        [job_id, updated_at, session.user.id, company_id]
+        [job_id, updated_at, userId, company_id]
       )
 
       return NextResponse.json({ message: 'Application count decremented and last application updated' })
@@ -66,7 +67,7 @@ export async function DELETE(req: Request) {
           DELETE FROM user_companies_applied
           WHERE user_id = $1 AND company_id = $2
         `,
-        [session.user.id, company_id]
+        [userId, company_id]
       )
 
       return NextResponse.json({ message: 'Entry deleted' })
@@ -74,7 +75,10 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ error: 'Unhandled count case' }, { status: 500 })
   } catch (error) {
-    return NextResponse.json({ error: `Failed to process the delete operation: ${error.message}` }, { status: 500 })
+      if (error instanceof Error) {
+        return NextResponse.json({ error: `Failed to process the delete operation: ${error.message}` }, { status: 500 })
+      }
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 })
   } finally {
     await pool.end()
   }

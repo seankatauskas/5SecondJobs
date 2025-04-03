@@ -12,6 +12,7 @@ export async function PUT(req: Request) {
 
   const { company_id, job_id } = await req.json()
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const userId = session.user?.id
 
   try {
     const { rows } = await pool.query(
@@ -25,12 +26,15 @@ export async function PUT(req: Request) {
           last_application_id = $3
         RETURNING *
       `,
-      [session.user.id, company_id, job_id] 
+      [userId, company_id, job_id] 
     )
 
     return NextResponse.json(rows[0])
   } catch (error) {
-    return NextResponse.json({ error: `Failed to add or update job for user: ${error.message}` }, { status: 500 })
+        if (error instanceof Error) {
+            return NextResponse.json({ error: `Failed to process the delete operation: ${error.message}` }, { status: 500 });
+        }
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 })
   } finally {
     await pool.end()
   }
