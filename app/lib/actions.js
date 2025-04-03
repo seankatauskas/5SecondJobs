@@ -55,7 +55,7 @@ export async function getApplications(pageType, session, currentCursor) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
     const pageSize = 20;
-
+ 
 
     let query;
     let values;
