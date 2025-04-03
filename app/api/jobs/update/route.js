@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { Pool } from '@neondatabase/serverless';
 
-export async function PATCH(req: Request) {
+export async function PATCH(req) {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

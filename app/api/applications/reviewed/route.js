@@ -1,10 +1,10 @@
 'use server'
 
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getCompletedApplications } from '@/app/lib/actions'
+import { getReviewedApplications } from '@/app/lib/actions'
 
-export async function GET(req: NextRequest) {
+export async function GET(req) {
     const session = await auth();
     if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     
     const currentCursor = req.nextUrl.searchParams.get('cursor');
     try {
-        const data = await getCompletedApplications(session, currentCursor)
+        const data = await getReviewedApplications(session, currentCursor)
         return NextResponse.json(data);
     } catch (error) {
         if (error instanceof Error) {
@@ -22,4 +22,5 @@ export async function GET(req: NextRequest) {
         }
     }
 }
+
 
