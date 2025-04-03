@@ -74,7 +74,7 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ error: 'Unhandled count case' }, { status: 500 })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to process the delete operation' }, { status: 500 })
+    return NextResponse.json({ error: `Failed to process the delete operation: ${error.message}` }, { status: 500 })
   } finally {
     await pool.end()
   }

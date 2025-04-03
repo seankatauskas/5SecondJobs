@@ -30,7 +30,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json(rows[0])
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to add or update job for user' }, { status: 500 })
+    return NextResponse.json({ error: `Failed to add or update job for user: ${error.message}` }, { status: 500 })
   } finally {
     await pool.end()
   }

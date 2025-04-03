@@ -33,10 +33,10 @@ export default function ApplicationsDisplay({ pageType }) {
     queryKey,
     queryFn,
     initialPageParam: 0,
-    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
 
-  const { ref, inView, entry } = useInView()
+  const { ref, inView } = useInView()
 
   useEffect(() => {
     if (inView) {

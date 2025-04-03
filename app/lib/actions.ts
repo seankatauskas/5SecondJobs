@@ -31,7 +31,7 @@ export async function prefetchApplications(pageType, pageParam) {
         const data = await fetchFunction(session, currentCursor)
         return data
     } catch (error) {
-        throw new Error('Failed to fetch jobs')
+        throw new Error(`Failed to fetch jobs: ${error.message}`)
     }
 }
 
@@ -83,10 +83,9 @@ export async function getApplications(pageType, session, currentCursor) {
             values = [session.user.id, pageType, pageSize];
         }
     } else {
-        let { updated_date, id } = decodeCursor(currentCursor)
-        if (pageType !== 'search') {
-            updated_date = new Date(updated_date)
-        }         
+        const { updated_date, id } = decodeCursor(currentCursor)
+        const updated_at = new Date(updated_date)
+
         query = `
             SELECT jobs.*, user_jobs.updated_at, user_companies_applied.last_applied 
             FROM jobs 
@@ -113,7 +112,7 @@ export async function getApplications(pageType, session, currentCursor) {
                 ORDER BY user_jobs.updated_at DESC, user_jobs.job_id DESC
                 LIMIT $5
             `
-            values = [session.user.id, pageType, updated_date, id, pageSize];
+            values = [session.user.id, pageType, updated_at, id, pageSize];
         }
     }
     
@@ -122,7 +121,7 @@ export async function getApplications(pageType, session, currentCursor) {
 
     const jobsDataCombined = await mergeApplicationData(jobs, pool);
 
-    let lastJob = jobs[jobs.length - 1];
+    const lastJob = jobs[jobs.length - 1];
 
     let nextCursor = null
     if (jobs.length === pageSize) {

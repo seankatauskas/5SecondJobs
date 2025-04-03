@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     );
     return NextResponse.json(rows[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to add job to user\'s list' }, { status: 500 });
+    return NextResponse.json({ error: `Failed to add job to user\'s list: ${error.message}` }, { status: 500 });
   } finally {
     await pool.end();
   }

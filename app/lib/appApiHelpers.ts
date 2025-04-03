@@ -1,5 +1,3 @@
-import { Pool } from '@neondatabase/serverless';
-
 export async function mergeApplicationData(jobs, pool) {
     const childTables = [
         'jobs_categories', 'jobs_desirable', 'jobs_experience_level',
@@ -18,7 +16,6 @@ export async function mergeApplicationData(jobs, pool) {
     const responses = await Promise.all(queries);
 
     responses.forEach((response, tableIndex) => {
-        const table = childTables[tableIndex];
         const groupedData = response.rows.reduce((acc, row) => {
             if (!acc[row.id]) acc[row.id] = [];
             acc[row.id].push(row);

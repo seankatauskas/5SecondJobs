@@ -21,7 +21,7 @@ export async function PATCH(req: Request) {
     }
     return NextResponse.json(rows[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update job on user\'s list' }, { status: 500 });
+    return NextResponse.json({ error: `Failed to update job on user\'s list: ${error.message}` }, { status: 500 });
   } finally {
     await pool.end();
   }

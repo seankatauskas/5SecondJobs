@@ -9,6 +9,9 @@ export async function updateUserCompanyApplied (company_id: string, job_id: stri
             job_id
         }),
     });
+    if (response.ok) {
+    }
+
 }
 
 
@@ -20,5 +23,7 @@ export async function removeUserCompanyApplied (company_id: string) {
             company_id
         }),
     });
+    if (response.ok) {
+    }
 }
 

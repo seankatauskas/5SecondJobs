@@ -1,7 +1,5 @@
 'use client'
 
-import { auth } from '@/auth';
-
 export async function fetchSearchApplications({ pageParam }) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/applications/search/?cursor=${pageParam}`, {
       method: 'GET',
