@@ -1,4 +1,4 @@
-import PrefetchApplicationsDisplay from '@/app/server/PrefetchApplicationsDisplay'
+import PrefetchApplicationsDisplay from '@/app/server/prefetchApplicationsDisplay'
 
 export default async function Home() {
     return (
