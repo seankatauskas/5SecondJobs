@@ -5,7 +5,7 @@ export default function SignIn() {
     <form
       action={async () => {
         "use server"
-        await signIn("google", { redirectTo: "/search" })
+        await signIn("google", { redirectTo: "/jobs" })
       }}
     >
       <button type="submit" className="text-base font-medium text-gray-600 px-3 py-2 hover:bg-gray-700 hover:text-white">Log in</button>

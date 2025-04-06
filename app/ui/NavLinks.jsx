@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation'
 import { DisclosureButton } from '@headlessui/react'
 
 const navigation = [
-  { name: 'search', href: '/search', current: true },
-  { name: 'reviewed', href: '/reviewed', current: false },
+  { name: 'jobs', href: '/jobs', current: true },
+  { name: 'saved', href: '/saved', current: false },
   { name: 'completed', href: '/completed', current: false },
 ]
 

@@ -1,6 +1,6 @@
 import PrefetchApplicationsDisplay from '@/app/server/prefetchApplicationsDisplay'
 
-export default async function Home() {
+export default function Home() {
     return (
         <PrefetchApplicationsDisplay pageType={'search'}>
         </PrefetchApplicationsDisplay>

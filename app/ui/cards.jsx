@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import ColorHash from 'color-hash'
-import { ArrowTopRightOnSquareIcon, ArchiveBoxIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/solid'
+import { ArrowTopRightOnSquareIcon, BookmarkIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 import { addUserJobStatus, changeJobUserStatus } from '@/app/lib/jobUserStatusHandlers' 
 import { updateUserCompanyApplied, removeUserCompanyApplied } from '@/app/lib/companiesUserAppliedHandlers' 
@@ -127,7 +127,7 @@ export function GuestActionsComponent() {
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </div>
                 <div className="hover:text-blue-500">
-                    <ArchiveBoxIcon className="size-6 ml-2" />
+                    <BookmarkIcon className="size-6 ml-2" />
                 </div>
             </div>
             <div className="flex justify-end">
@@ -159,7 +159,7 @@ export function SearchActionsComponent({ data, handleRemoval }) {
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </a>
                 <div onClick={(e) => handleActionClick(e, 'reviewed')} className="hover:text-blue-500 cursor-pointer">
-                    <ArchiveBoxIcon className="size-6 ml-2" />
+                    <BookmarkIcon className="size-6 ml-2" />
                 </div>
             </div>
             <div className="flex justify-end">
@@ -218,7 +218,7 @@ export function CompletedActionsComponent({ data, handleRemoval }) {
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </a>
                 <div onClick={(e) => handleActionClick(e, 'reviewed')} className="hover:text-blue-500 cursor-pointer">
-                    <ArchiveBoxIcon className="size-6 ml-2" />
+                    <BookmarkIcon className="size-6 ml-2" />
                 </div>
             </div>
             <div className="flex justify-end">

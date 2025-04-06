@@ -12,6 +12,13 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        shimmer: {
+            '100%': {
+            transform: 'translateX(100%)',
+            },
+        },
+      },
     },
   },
   plugins: [],
