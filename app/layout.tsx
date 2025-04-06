@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from './providers'
 import Navbar from '@/app/ui/navbar'
+import { Analytics } from "@vercel/analytics/react"
 
 
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default function RootLayout({
           <p>© 2025 Sean Katauskas</p>
         </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
