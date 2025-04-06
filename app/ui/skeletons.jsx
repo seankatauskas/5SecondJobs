@@ -30,9 +30,11 @@ export function CardSkeleton({search = false}) {
                 <div className="bg-gray-200 rounded-lg p-1 pl-2 pr-2 mr-2 w-40">&nbsp;</div>
                 <div className="bg-gray-200 rounded-lg p-1 pl-2 pr-2 mr-2 w-40">&nbsp;</div>
             </div>
-            {search ? <h2 className="text-base w-32 bg-gray-200 font-medium text-gray-500 mt-2 mb-1 h-6"></h2>
-            : <h2 className="text-base w-24 bg-gray-200 font-medium text-gray-500 mt-2 mb-1 h-6"></h2>
-            }
+            <div>
+                {search ? <h2 className="text-base w-32 bg-gray-200 font-medium text-gray-500 mt-2 mb-1 h-6"></h2>
+                : <h2 className="text-base w-24 bg-gray-200 font-medium text-gray-500 mt-2 mb-1 h-6"></h2>
+                }
+            </div>
         </div>
     </div>
     </div>

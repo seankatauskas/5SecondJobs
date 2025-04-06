@@ -35,8 +35,16 @@ export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, dem
     const locations = data.locations
     const location = cardLocation(locations)
     const remote = data.remote
-
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const updatedAt = data.updated_at 
+        ? new Date(new Date(data.updated_at).getTime() - 5 * 60 * 60 * 1000).toLocaleString('en-US', { 
+            timeZone: userTimeZone, 
+            month: 'numeric', 
+            day: 'numeric', 
+            year: 'numeric',
+        }) 
+        : null
+
     const lastApplied = data.last_applied 
         ? new Date(new Date(data.last_applied).getTime() - 5 * 60 * 60 * 1000).toLocaleString('en-US', { 
             timeZone: userTimeZone, 
@@ -70,11 +78,13 @@ export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, dem
             </div>
             <div className="flex justify-between">
                 <h2 className="text-[1.1rem] font-semibold">{title}</h2>
-                <h2 className="text-base font-medium text-gray-500">{date}</h2>
+                {pageType !== 'completed' ? <h2 className="text-base font-medium text-gray-500">{date}</h2>
+                : <h2 className="text-base font-medium text-gray-500">Applied on {updatedAt}</h2>
+                }
             </div>
             <div className="flex items-baseline">
                 <h2 className="text-base italic">{companyName}&nbsp;</h2>
-                {lastApplied && <h2 className="text-sm font-medium underline">(last applied {lastApplied})</h2>}
+                {(pageType !== 'completed' && lastApplied) && <h2 className="text-sm font-medium underline">(applied to company on {lastApplied})</h2>}
             </div>
             <div className="flex items-baseline">
                 <h2 className="text-base">
@@ -236,7 +246,7 @@ export function TopExpandableCardComponent({ data }) {
     const colorHash = new ColorHash()
     const skills = (data.skills != null) ? limitListOrSingleElementSize(data.skills, 4)
     .map((skill, i) => 
-        <div key={i} style={{ backgroundColor: colorHash.hex(skill) }} className="rounded-lg p-1 pl-2 pr-2 mr-2">{skill}</div>
+        <div key={i} style={{ backgroundColor: colorHash.hex(skill) }} className="p-1 pl-2 pr-2 mr-2">{skill}</div>
     ) : null
 
     return (
