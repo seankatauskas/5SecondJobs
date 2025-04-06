@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from 'react'
 import ColorHash from 'color-hash'
 import { ArrowTopRightOnSquareIcon, BookmarkIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline'
 
@@ -7,7 +8,7 @@ import { updateUserCompanyApplied, removeUserCompanyApplied } from '@/app/lib/co
 
 export function Card({ data, isActive, onShow, className, pageType, handleRemoval }) {
     return (
-    <motion.div onClick={onShow} className={`border-4 border-gray-300 px-5 md:px-8 pb-6 ${className}`}>
+    <motion.div onClick={onShow} className={`border-4 border-gray-300 px-5 md:px-8 ${className}`}>
       <div className="flex-col">
             <BaseCardComponent data={data} pageType={pageType} handleRemoval={handleRemoval} />
             {isActive && 
@@ -27,6 +28,8 @@ export function Card({ data, isActive, onShow, className, pageType, handleRemova
 
 
 export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, demo = false}) {
+    const [hoverComponent, setHoverComponent] = useState(null)
+
     const title = data.title
     const companyName = data.company_name
     const entryLevel = data.entry_level
@@ -69,7 +72,7 @@ export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, dem
     const salaryHourly = (data.max_salary != null && data.max_salary < 200) ? true : false 
 
     return (
-        <>
+        <div className="">
             <div className="flex pb-2 text-base font-bold text-white">
                 {entryLevel && <div className="w-8 h-8 bg-indigo-400 flex items-center justify-center">E</div>}
                 {junior && <div className="w-8 h-8 bg-emerald-400 flex items-center justify-center">J</div>}
@@ -108,22 +111,28 @@ export function BaseCardComponent({ data, pageType = 'guest', handleRemoval, dem
                 <div className="flex text-base font-medium mt-1">
                     {functions}
                 </div>
-                <UserActionsComponent data={data} pageType={pageType} handleRemoval={handleRemoval} />
+                <UserActionsComponent data={data} setHoverComponent={setHoverComponent} pageType={pageType} handleRemoval={handleRemoval} />
             </div>
-        </>
+            {hoverComponent ? 
+            <div className="flex justify-end">
+                <div className={`h-6 text-center font-bold ${hoverComponent?.className}`}>{hoverComponent?.text}</div>
+            </div>
+            : <div className="h-6"></div>
+            }
+        </div>
     )
 }
 
-export function UserActionsComponent({ pageType = 'guest', data, handleRemoval }) {
+export function UserActionsComponent({ pageType = 'guest', data, handleRemoval, setHoverComponent}) {
     switch (pageType) {
         case 'guest':
             return <GuestActionsComponent />
         case 'search':
-            return <SearchActionsComponent data={data} handleRemoval={handleRemoval} />
+            return <SearchActionsComponent data={data} setHoverComponent={setHoverComponent} handleRemoval={handleRemoval} />
         case 'reviewed':
-            return <ReviewedActionsComponent data={data} handleRemoval={handleRemoval} />
+            return <ReviewedActionsComponent data={data} setHoverComponent={setHoverComponent} handleRemoval={handleRemoval} />
         case 'completed':
-            return <CompletedActionsComponent data={data} handleRemoval={handleRemoval} />
+            return <CompletedActionsComponent data={data} setHoverComponent={setHoverComponent} handleRemoval={handleRemoval} />
         default:
             return <GuestActionsComponent />
     }
@@ -152,7 +161,7 @@ export function GuestActionsComponent() {
     )
 }
 
-export function SearchActionsComponent({ data, handleRemoval }) {
+export function SearchActionsComponent({ data, handleRemoval, setHoverComponent }) {
     const handleActionClick = (e, action) => {
         e.stopPropagation()
         addUserJobStatus(data.id, action)
@@ -165,18 +174,31 @@ export function SearchActionsComponent({ data, handleRemoval }) {
     return (
         <div className="block md:flex items-baseline text-gray-500 my-auto">
             <div className="flex">
-                <a href={data.url} target="_blank" rel="noopener noreferrer" className="hover:text-black">
+                <a href={data.url} 
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseOver={() => setHoverComponent({text: "Link", className: "w-32 bg-gray-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    target="_blank" rel="noopener noreferrer" className="hover:text-black">
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </a>
-                <div onClick={(e) => handleActionClick(e, 'reviewed')} className="hover:text-blue-500 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'reviewed')} 
+                    onMouseOver={() => setHoverComponent({text: "Save", className: "w-32 bg-blue-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-blue-500 cursor-pointer">
                     <BookmarkIcon className="size-6 ml-2" />
                 </div>
             </div>
             <div className="flex justify-end">
-                <div onClick={(e) => handleActionClick(e, 'completed')} className="hover:text-green-600 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'completed')} 
+                    onMouseOver={() => setHoverComponent({text: "Complete", className: "w-32 bg-green-600 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-green-600 cursor-pointer">
                     <CheckIcon className="size-6 ml-1" />
                 </div>
-                <div onClick={(e) => handleActionClick(e, 'deleted')} className="hover:text-red-500 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'deleted')} 
+                    onMouseOver={() => setHoverComponent({text: "Delete", className: "w-32 bg-red-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-red-500 cursor-pointer">
                     <TrashIcon className="size-6 ml-2 md:ml-1" />
                 </div>
             </div>
@@ -184,7 +206,7 @@ export function SearchActionsComponent({ data, handleRemoval }) {
     )
 }
 
-export function ReviewedActionsComponent({ data, handleRemoval }) {
+export function ReviewedActionsComponent({ data, handleRemoval, setHoverComponent }) {
     const handleActionClick = (e, action) => {
         e.stopPropagation()
         changeJobUserStatus(data.id, action)
@@ -197,15 +219,25 @@ export function ReviewedActionsComponent({ data, handleRemoval }) {
     return (
         <div className="block md:flex items-baseline text-gray-500 my-auto">
             <div className="flex">
-                <a href={data.url} target="_blank" rel="noopener noreferrer" className="hover:text-black">
+                <a href={data.url} 
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseOver={() => setHoverComponent({text: "Link", className: "w-24 bg-gray-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    target="_blank" rel="noopener noreferrer" className="hover:text-black">
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </a>
             </div>
             <div className="flex justify-end">
-                <div onClick={(e) => handleActionClick(e, 'completed')} className="hover:text-green-600 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'completed')} 
+                    onMouseOver={() => setHoverComponent({text: "Complete", className: "w-24 bg-green-600 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-green-600 cursor-pointer">
                     <CheckIcon className="size-6 ml-1" />
                 </div>
-                <div onClick={(e) => handleActionClick(e, 'deleted')} className="hover:text-red-500 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'deleted')} 
+                    onMouseOver={() => setHoverComponent({text: "Delete", className: "w-24 bg-red-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-red-500 cursor-pointer">
                     <TrashIcon className="size-6 ml-2 md:ml-1" />
                 </div>
             </div>
@@ -213,7 +245,7 @@ export function ReviewedActionsComponent({ data, handleRemoval }) {
     )
 }
 
-export function CompletedActionsComponent({ data, handleRemoval }) {
+export function CompletedActionsComponent({ data, handleRemoval, setHoverComponent }) {
     const handleActionClick = (e, action) => {
         e.stopPropagation()
         changeJobUserStatus(data.id, action)
@@ -224,15 +256,25 @@ export function CompletedActionsComponent({ data, handleRemoval }) {
     return (
         <div className="block md:flex items-baseline text-gray-500 my-auto">
             <div className="flex">
-                <a href={data.url} target="_blank" rel="noopener noreferrer" className="hover:text-black">
+                <a href={data.url} 
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseOver={() => setHoverComponent({text: "Link", className: "w-24 bg-gray-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    target="_blank" rel="noopener noreferrer" className="hover:text-black">
                     <ArrowTopRightOnSquareIcon className="size-6 ml-2" />
                 </a>
-                <div onClick={(e) => handleActionClick(e, 'reviewed')} className="hover:text-blue-500 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'reviewed')} 
+                    onMouseOver={() => setHoverComponent({text: "Save", className: "w-24 bg-blue-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-blue-500 cursor-pointer">
                     <BookmarkIcon className="size-6 ml-2" />
                 </div>
             </div>
             <div className="flex justify-end">
-                <div onClick={(e) => handleActionClick(e, 'deleted')} className="hover:text-red-500 cursor-pointer">
+                <div onClick={(e) => handleActionClick(e, 'deleted')} 
+                    onMouseOver={() => setHoverComponent({text: "Delete", className: "w-24 bg-red-500 text-white"})}
+                    onMouseLeave={() => setHoverComponent(null)}
+                    className="hover:text-red-500 cursor-pointer">
                     <TrashIcon className="size-6 ml-2 md:ml-1" />
                 </div>
             </div>
@@ -250,7 +292,7 @@ export function TopExpandableCardComponent({ data }) {
     ) : null
 
     return (
-        <div className="mt-4">
+        <div>
             <hr className="border-gray-300 border-t-2"/>
             <div className="mt-2">
                 {(categories != null) && (<div><span className="font-medium">Category: </span>{categories.join(", ")}</div>)}
