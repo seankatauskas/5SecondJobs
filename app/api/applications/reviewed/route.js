@@ -2,17 +2,25 @@
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getReviewedApplications } from '@/app/lib/actions'
+import { getApplications } from '@/app/lib/actions'
 
 export async function GET(req) {
     const session = await auth();
     if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
+    const searchParams = req.nextUrl.searchParams
     const currentCursor = req.nextUrl.searchParams.get('cursor');
+    const filters = {}
+    for (const [key, value] of searchParams.entries()) {
+        if (key !== 'cursor') {
+            filters[key] = value
+        }
+    }
+
     try {
-        const data = await getReviewedApplications(session, currentCursor)
+        const data = await getApplications('reviewed', session, currentCursor, filters)
         return NextResponse.json(data);
     } catch (error) {
         if (error instanceof Error) {

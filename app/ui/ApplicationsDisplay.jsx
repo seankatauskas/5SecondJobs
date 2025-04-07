@@ -14,12 +14,13 @@ const override = {
   borderColor: "gray",
 }
 
-export default function ApplicationsDisplay({ pageType }) {
+export default function ApplicationsDisplay({ pageType, filters }) {
   const queryClient = useQueryClient()
   const [activeId, setActiveId] = useState(0)
   const isPrefetch = false
-  const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch)
+  const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch, filters)
   const [removingId, setRemovingId] = useState(null)
+
 
   const {
     data,
@@ -64,6 +65,9 @@ export default function ApplicationsDisplay({ pageType }) {
     <p>Error: {error.message}</p>
   ) : (
     <>
+    <div>
+    <input type="text" id="small-input" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+</div>
       {data.pages.map((group, i) => (
         <React.Fragment key={i}>
           <div className='flex flex-col'>

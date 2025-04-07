@@ -1,23 +1,9 @@
 'use client'
 
-export async function fetchSearchApplications({ pageParam }) {
-    const response = await fetch(`/api/applications/search/?cursor=${pageParam}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    return response.json()
-}
-
-export async function fetchReviewedApplications({ pageParam }) {
-    const response = await fetch(`/api/applications/reviewed/?cursor=${pageParam}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    return response.json()
-}
-
-export async function fetchCompletedApplications({ pageParam }) {
-    const response = await fetch(`/api/applications/completed/?cursor=${pageParam}`, {
+export async function fetchApplications({ queryKey, pageParam }) {
+    const [, pageType, filters] = queryKey
+    const filterParams = new URLSearchParams(filters)
+    const response = await fetch(`/api/applications/${pageType}/?cursor=${pageParam}&${filterParams}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });

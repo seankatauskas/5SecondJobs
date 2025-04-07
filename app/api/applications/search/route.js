@@ -2,7 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getSearchApplications } from '@/app/lib/actions'
+import { getApplications } from '@/app/lib/actions'
 
 export async function GET(req) {
     const session = await auth();
@@ -10,9 +10,17 @@ export async function GET(req) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    const searchParams = req.nextUrl.searchParams
     const currentCursor = req.nextUrl.searchParams.get('cursor');
+    const filters = {}
+    for (const [key, value] of searchParams.entries()) {
+        if (key !== 'cursor') {
+            filters[key] = value
+        }
+    }
+
     try {
-        const data = await getSearchApplications(session, currentCursor)
+        const data = await getApplications('search', session, currentCursor, filters)
         return NextResponse.json(data);
     } catch (error) {
         if (error instanceof Error) {

@@ -3,9 +3,10 @@ import React from 'react'
 import { dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query"
 import queryParamsPageType from '@/app/lib/appDisplayHelpers' 
 
-export default async function PrefetchApplicationsDisplay({ pageType }) {
+export default async function PrefetchApplicationsDisplay({ pageType, filters }) {
     const isPrefetch = true
-    const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch)
+    const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch, filters)
+
 
     const queryClient = new QueryClient()
     await queryClient.prefetchInfiniteQuery({
@@ -15,7 +16,7 @@ export default async function PrefetchApplicationsDisplay({ pageType }) {
     })
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-                <ApplicationsDisplay pageType={pageType}/>
+                <ApplicationsDisplay pageType={pageType} filters={filters}/>
         </HydrationBoundary>
     )
 }

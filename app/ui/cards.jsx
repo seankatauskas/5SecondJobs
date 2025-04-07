@@ -12,7 +12,7 @@ export function Card({ data, isActive, onShow, className, pageType, handleRemova
       <div className="flex-col">
             <BaseCardComponent data={data} pageType={pageType} handleRemoval={handleRemoval} />
             {isActive && 
-            <motion.div>
+            <motion.div className="mb-6">
                 {(data.categories != null | data.industries != null | data.skills != null) && 
                     <TopExpandableCardComponent data={data} />
                 }

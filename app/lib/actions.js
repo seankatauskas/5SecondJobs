@@ -13,13 +13,10 @@ export async function fetchGuestApplications() {
     return response.json()
 }
 
-export async function prefetchApplications(pageType, pageParam) {
-    const getApplicationsFn = {
-        search: getSearchApplications, 
-        reviewed: getReviewedApplications,
-        completed: getCompletedApplications
-    } 
-    const fetchFunction = getApplicationsFn[pageType]
+export async function prefetchApplications(queryKey) {
+    const pageType = queryKey.queryKey[1]
+    const filters = queryKey.queryKey[2]
+    const pageParam = queryKey.pageParam
 
     const session = await auth();
     if (!session) {
@@ -28,7 +25,7 @@ export async function prefetchApplications(pageType, pageParam) {
     
     const currentCursor = pageParam
     try {
-        const data = await fetchFunction(session, currentCursor)
+        const data = await getApplications(pageType, session, currentCursor, filters)
         return data
     } catch (error) {
         if (error instanceof Error) {
@@ -39,19 +36,7 @@ export async function prefetchApplications(pageType, pageParam) {
     }
 }
 
-export async function prefetchSearchApplications({ pageParam }) {
-    return await prefetchApplications('search', pageParam)
-}
-
-export async function prefetchReviewedApplications({ pageParam }) {
-    return await prefetchApplications('reviewed', pageParam)
-}
-
-export async function prefetchCompletedApplications({ pageParam }) {
-    return await prefetchApplications('completed', pageParam)
-}
-
-export async function getApplications(pageType, session, currentCursor) {
+export async function getApplications(pageType, session, currentCursor, filters = {}) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
     const pageSize = 20;
@@ -138,17 +123,3 @@ export async function getApplications(pageType, session, currentCursor) {
     const response = { data: jobsDataCombined.slice(0, pageSize), nextCursor } 
     return response
 }
-
-export async function getSearchApplications(session, currentCursor) {
-    return await getApplications('search', session, currentCursor)
-}
-
-export async function getReviewedApplications(session, currentCursor) {
-    return await getApplications('reviewed', session, currentCursor)
-}
-
-export async function getCompletedApplications(session, currentCursor) {
-    return await getApplications('completed', session, currentCursor)
-}
-
-
