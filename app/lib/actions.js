@@ -40,7 +40,9 @@ export async function getApplications(pageType, session, currentCursor, filters 
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
     const pageSize = 20;
- 
+    
+    if (filters) {
+    }
 
     let query;
     let values;
