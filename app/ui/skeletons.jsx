@@ -44,7 +44,7 @@ export function CardSkeleton({search = false}) {
 export function FilterSkeleton() {
     return (
         <div
-          className={`${shimmer} relative overflow-hidden shadow-sm mb-4`}
+          className={`${shimmer} relative overflow-hidden mb-4`}
         >
             <div className="flex">
             <div className="w-2/5 border-2 bg-gray-100 border-gray-200 h-7">
