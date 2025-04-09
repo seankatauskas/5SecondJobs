@@ -2,11 +2,15 @@ import ApplicationsDisplay from '@/app/ui/ApplicationsDisplay'
 import React from 'react'
 import { dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query"
 import queryParamsPageType from '@/app/lib/appDisplayHelpers' 
+import { getCount } from '@/app/lib/actions'
+import { auth } from '@/auth'
 
 export default async function PrefetchApplicationsDisplay({ pageType, filters }) {
+    const session = await auth()
+    const count = getCount(pageType, session, filters)
+
     const isPrefetch = true
     const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch, filters)
-
 
     const queryClient = new QueryClient()
     await queryClient.prefetchInfiniteQuery({
@@ -16,7 +20,7 @@ export default async function PrefetchApplicationsDisplay({ pageType, filters })
     })
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
-                <ApplicationsDisplay pageType={pageType} filters={filters}/>
+                <ApplicationsDisplay pageType={pageType} serverFilters={filters} count={count}/>
         </HydrationBoundary>
     )
 }

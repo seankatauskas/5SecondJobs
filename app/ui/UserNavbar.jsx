@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 export default function UserNavbar() {
   return (
-    <Disclosure as="nav" className="sticky top-4 border-4 border-gray-300 bg-white my-4">
+    <Disclosure as="nav" className="z-10 sticky top-4 border-4 border-gray-300 bg-white my-4">
       <div className="px-5 md:px-8">
         <div className="relative flex items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">

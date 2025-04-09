@@ -52,6 +52,3 @@ export function encodeCursor(data) {
 export function decodeCursor(cursor) {
     return JSON.parse(Buffer.from(cursor, 'base64url').toString());
 }
-
-
-

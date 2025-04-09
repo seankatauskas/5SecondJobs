@@ -2,21 +2,34 @@
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getApplications } from '@/app/lib/actions'
-import { configureFilters } from '@/app/lib/filterHelpers'
+import { getCount } from '@/app/lib/actions'
 
 export async function GET(req) {
     const session = await auth();
     if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const searchParams = req.nextUrl.searchParams
-    const currentCursor = req.nextUrl.searchParams.get('cursor');
-    const filters = configureFilters(searchParams)
+    const pageType = req.nextUrl.searchParams.get('pagetype');
+    const filters = {}
+    for (const [key, value] of searchParams.entries()) {
+        if (key === 'search') {
+            filters[key] = value
+        } else {
+            if (key !== 'pagetype') {
+                if (value !== "") {
+                    filters[key] = value.split(",")
+                } else {
+                    filters[key] = []
+                }
+            }
+        }
+    }
+
 
     try {
-        const data = await getApplications('completed', session, currentCursor, filters)
+        const data = await getCount(pageType, session, filters)
         return NextResponse.json(data);
     } catch (error) {
         if (error instanceof Error) {

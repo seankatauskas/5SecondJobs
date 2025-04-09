@@ -1,14 +1,14 @@
 'use server'
 
-import { auth } from '@/auth';
-import { Pool } from '@neondatabase/serverless';
+import { auth } from '@/auth'
+import { Pool } from '@neondatabase/serverless'
 import { mergeApplicationData, encodeCursor, decodeCursor } from '@/app/lib/appApiHelpers'
 
 export async function fetchGuestApplications() {
     const response = await fetch(`/api/applications/guest`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-    });
+    })
 
     return response.json()
 }
@@ -18,9 +18,9 @@ export async function prefetchApplications(queryKey) {
     const filters = queryKey.queryKey[2]
     const pageParam = queryKey.pageParam
 
-    const session = await auth();
+    const session = await auth()
     if (!session) {
-        throw new Error('Unauthorized');
+        throw new Error('Unauthorized')
     }
     
     const currentCursor = pageParam
@@ -29,99 +29,239 @@ export async function prefetchApplications(queryKey) {
         return data
     } catch (error) {
         if (error instanceof Error) {
-            throw new Error(`Failed to fetch jobs: ${error.message}`);
+            throw new Error(`Failed to fetch jobs: ${error.message}`)
         } else {
-            throw new Error("Failed to fetch jobs: An unknown error occurred");
+            throw new Error("Failed to fetch jobs: An unknown error occurred")
         }
     }
 }
 
-export async function getApplications(pageType, session, currentCursor, filters = {}) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
-    const pageSize = 20;
+function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, countQuery = false) {
+    const joins = new Set()
+    const conditions = []
+    const values = []
+    let paramIndex
     
-    if (filters) {
+    if (countQuery) {
+        if (pageType === 'search') {
+            paramIndex = 2 
+        } else {
+            paramIndex = 3
+        }
+    } else {
+        if (currentCursor == 0) {
+            if (pageType === 'search') {
+                paramIndex = 3 
+            } else {
+                paramIndex = 4
+            }
+        } else {
+            if (pageType === 'search') {
+                paramIndex = 5 
+            } else {
+                paramIndex = 6
+            }
+        }
     }
 
-    let query;
-    let values;
-    if (currentCursor == 0) {
+
+    const locationMap = {
+        ny: 'New York, NY, USA',
+        sf: 'San Francisco, CA, USA',
+        la: 'Los Angeles, CA, USA',
+        chicago: 'Chicago, IL, USA'
+    }
+
+    const experienceMap = {
+        mid: 'Mid Level',
+        junior: 'Junior',
+        entry: 'Entry Level/New Grad'
+    }
+
+    if (Array.isArray(filters.location) && filters.location.length > 0) {
+        const locations = filters.location
+            .map(key => locationMap[key])
+            .filter(Boolean)
+
+        if (locations.length > 0) {
+            joins.add(`JOIN jobs_locations ON jobs.id = jobs_locations.id`)
+
+            const placeholders = locations.map(() => `$${paramIndex++}`)
+            conditions.push(`jobs_locations.locations IN (${placeholders.join(', ')})`)
+            values.push(...locations)
+        }
+    }
+
+    if (Array.isArray(filters.experience) && filters.experience.length > 0) {
+        const experiences = filters.experience
+            .map(key => experienceMap[key])
+            .filter(Boolean)
+
+        if (experiences.length > 0) {
+            joins.add(`JOIN jobs_experience_level ON jobs.id = jobs_experience_level.id`)
+
+            const placeholders = experiences.map(() => `$${paramIndex++}`)
+            conditions.push(`jobs_experience_level.experience_level IN (${placeholders.join(', ')})`)
+            values.push(...experiences)
+        }
+    }
+
+
+    if (filters.search && typeof filters.search === 'string') {
+        conditions.push(`jobs.title ILIKE $${paramIndex++}`)
+        values.push(`%${filters.search}%`)
+    }
+
+    return {
+        joins: Array.from(joins),
+        whereClause: conditions.length ? ' AND ' + conditions.join(' AND ') : '',
+        values
+    }
+}
+
+export async function getCount(pageType, session, filters = {}) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+    const { joins, whereClause, values: filterValues } = buildFilterJoinsAndConditions(filters, null, pageType, true)
+
+    let query
+    let values
+    try {
         query = `
-            SELECT jobs.*, user_jobs.updated_at, user_companies_applied.last_applied  
-            FROM jobs
+            SELECT COUNT(DISTINCT jobs.id)
+            FROM jobs 
+            ${joins.join('\n')}
             LEFT JOIN user_companies_applied 
             ON jobs.company_id = user_companies_applied.company_id 
             AND user_companies_applied.user_id = $1
         `
         if (pageType === 'search') {
             query += `
-                LEFT JOIN user_jobs ON jobs.id = user_jobs.job_id 
-                AND user_jobs.user_id = $1
-                WHERE user_jobs.job_id IS NULL 
-                ORDER BY jobs.updated_date DESC, jobs.id DESC 
-                LIMIT $2
-            `
-            values = [session.user.id, pageSize];
-        } else {
-            query += `
-                JOIN user_jobs ON jobs.id = user_jobs.job_id
-                WHERE user_jobs.status = $2 
-                AND user_jobs.user_id = $1
-                ORDER BY user_jobs.updated_at DESC, user_jobs.job_id DESC
-                LIMIT $3
-            `
-            values = [session.user.id, pageType, pageSize];
-        }
-    } else {
-        const { updated_date, id } = decodeCursor(currentCursor)
-        const updated_at = new Date(updated_date)
-
-        query = `
-            SELECT jobs.*, user_jobs.updated_at, user_companies_applied.last_applied 
-            FROM jobs 
-            LEFT JOIN user_companies_applied 
-            ON jobs.company_id = user_companies_applied.company_id 
-            AND user_companies_applied.user_id = $1
-        `;
-        if (pageType === 'search') {
-            query += `
                 LEFT JOIN user_jobs ON jobs.id = user_jobs.job_id
                 AND user_jobs.user_id = $1
                 WHERE user_jobs.job_id IS NULL 
-                AND (jobs.updated_date < $2 OR (jobs.updated_date = $2 AND jobs.id < $3))
-                ORDER BY updated_date DESC, id DESC 
-                LIMIT $4
+                ${whereClause}
             `
-            values = [session.user.id, updated_date, id, pageSize];
+            values = [session.user.id, ...filterValues]
         } else {
             query += `
                 JOIN user_jobs ON jobs.id = user_jobs.job_id
                 WHERE user_jobs.status = $2
                 AND user_jobs.user_id = $1
-                AND (user_jobs.updated_at < $3 OR (user_jobs.updated_at = $3 AND user_jobs.job_id < $4))
-                ORDER BY user_jobs.updated_at DESC, user_jobs.job_id DESC
-                LIMIT $5
+                ${whereClause}
             `
-            values = [session.user.id, pageType, updated_at, id, pageSize];
+            values = [session.user.id, pageType, ...filterValues]
         }
+        const count = await pool.query(query, values)
+        return count.rows[0].count
+    } catch (error) {
+        throw error
+    } finally {
+        await pool.end()
     }
-    
-
-    const { rows: jobs } = await pool.query(query, values);
-
-    const jobsDataCombined = await mergeApplicationData(jobs, pool);
-
-    const lastJob = jobs[jobs.length - 1];
-
-    let nextCursor = null
-    if (jobs.length === pageSize) {
-        if (pageType === 'search') {
-            nextCursor = encodeCursor({ updated_date: lastJob.updated_date, id: lastJob.id })
-        } else {
-            nextCursor = encodeCursor({ updated_date: lastJob.updated_at, id: lastJob.id })
-        }
-    }
-    const response = { data: jobsDataCombined.slice(0, pageSize), nextCursor } 
-    return response
 }
+
+export async function getApplications(pageType, session, currentCursor, filters = {}) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+    const pageSize = 20
+
+    const { joins, whereClause, values: filterValues } = buildFilterJoinsAndConditions(filters, currentCursor, pageType)
+
+    let query
+    let values
+
+    try {
+        if (currentCursor == 0) {
+            query = `
+                SELECT DISTINCT jobs.*, user_jobs.updated_at, user_companies_applied.last_applied, user_jobs.job_id  
+                FROM jobs
+                ${joins.join('\n')}
+                LEFT JOIN user_companies_applied 
+                ON jobs.company_id = user_companies_applied.company_id 
+                AND user_companies_applied.user_id = $1
+            `
+
+            if (pageType === 'search') {
+                query += `
+                    LEFT JOIN user_jobs ON jobs.id = user_jobs.job_id 
+                    AND user_jobs.user_id = $1
+                    WHERE user_jobs.job_id IS NULL
+                    ${whereClause}
+                    ORDER BY jobs.updated_date DESC, jobs.id DESC 
+                    LIMIT $2
+                `
+                values = [session.user.id, pageSize, ...filterValues]
+            } else {
+                query += `
+                    JOIN user_jobs ON jobs.id = user_jobs.job_id
+                    WHERE user_jobs.status = $2 
+                    AND user_jobs.user_id = $1
+                    ${whereClause}
+                    ORDER BY user_jobs.updated_at DESC, user_jobs.job_id DESC
+                    LIMIT $3
+                `
+                values = [session.user.id, pageType, pageSize, ...filterValues]
+            }
+        } else {
+            const { updated_date, id } = decodeCursor(currentCursor)
+            const updated_at = new Date(updated_date)
+
+            query = `
+                SELECT DISTINCT jobs.*, user_jobs.updated_at, user_companies_applied.last_applied, user_jobs.job_id
+                FROM jobs 
+                ${joins.join('\n')}
+                LEFT JOIN user_companies_applied 
+                ON jobs.company_id = user_companies_applied.company_id 
+                AND user_companies_applied.user_id = $1
+            `
+
+            if (pageType === 'search') {
+                query += `
+                    LEFT JOIN user_jobs ON jobs.id = user_jobs.job_id
+                    AND user_jobs.user_id = $1
+                    WHERE user_jobs.job_id IS NULL 
+                    AND (jobs.updated_date < $2 OR (jobs.updated_date = $2 AND jobs.id < $3))
+                    ${whereClause}
+                    ORDER BY updated_date DESC, id DESC 
+                    LIMIT $4
+                `
+                values = [session.user.id, updated_date, id, pageSize, ...filterValues]
+            } else {
+                query += `
+                    JOIN user_jobs ON jobs.id = user_jobs.job_id
+                    WHERE user_jobs.status = $2
+                    AND user_jobs.user_id = $1
+                    AND (user_jobs.updated_at < $3 OR (user_jobs.updated_at = $3 AND user_jobs.job_id < $4))
+                    ${whereClause}
+                    ORDER BY user_jobs.updated_at DESC, user_jobs.job_id DESC
+                    LIMIT $5
+                `
+                values = [session.user.id, pageType, updated_at, id, pageSize, ...filterValues]
+            }
+        }
+
+        const { rows: jobs } = await pool.query(query, values)
+
+        const jobsDataCombined = await mergeApplicationData(jobs, pool)
+
+        const lastJob = jobs[jobs.length - 1]
+
+        let nextCursor = null
+        if (jobs.length === pageSize) {
+            if (pageType === 'search') {
+                nextCursor = encodeCursor({ updated_date: lastJob.updated_date, id: lastJob.id })
+            } else {
+                nextCursor = encodeCursor({ updated_date: lastJob.updated_at, id: lastJob.id })
+            }
+        }
+
+        return {
+            data: jobsDataCombined.slice(0, pageSize),
+            nextCursor
+        }
+    } catch (error) {
+        throw error
+    } finally {
+        await pool.end()
+    }
+}
+

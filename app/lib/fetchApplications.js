@@ -9,3 +9,12 @@ export async function fetchApplications({ queryKey, pageParam }) {
     });
     return response.json()
 }
+
+export async function fetchApplicationsCount(filters, pageType) {
+    const filterParams = new URLSearchParams(filters)
+    const response = await fetch(`/api/applications/count/?pagetype=${pageType}&${filterParams}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.json()
+}

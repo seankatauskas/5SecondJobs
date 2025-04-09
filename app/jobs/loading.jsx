@@ -1,5 +1,10 @@
-import { CardsSkeleton } from '@/app/ui/skeletons'
+import { CardsSkeleton, FilterSkeleton } from '@/app/ui/skeletons'
 
 export default function Loading() {
-    return <CardsSkeleton search={true}/>
+    return (
+        <>
+            <FilterSkeleton />
+            <CardsSkeleton search={true}/>
+        </>
+    )
 }

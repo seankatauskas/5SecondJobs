@@ -3,6 +3,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { getApplications } from '@/app/lib/actions'
+import { configureFilters } from '@/app/lib/filterHelpers'
+
 
 export async function GET(req) {
     const session = await auth();
@@ -12,12 +14,7 @@ export async function GET(req) {
     
     const searchParams = req.nextUrl.searchParams
     const currentCursor = req.nextUrl.searchParams.get('cursor');
-    const filters = {}
-    for (const [key, value] of searchParams.entries()) {
-        if (key !== 'cursor') {
-            filters[key] = value
-        }
-    }
+    const filters = configureFilters(searchParams)
 
     try {
         const data = await getApplications('search', session, currentCursor, filters)
