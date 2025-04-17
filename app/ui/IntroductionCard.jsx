@@ -6,7 +6,17 @@ export function IntroductionCard({ className}) {
     <div className={`px-5 md:px-8 pb-12 ${className}`}>
       <div className="flex-col">
             <IntroductionBaseCardComponent />
-            <IntroductionTopExpandableCardComponent />
+            <div className="mt-12 w-full max-w-4xl mx-auto overflow-hidden border-2 border-gray-300">
+              <video 
+                src="/5SecondJobs_Demo.mp4" 
+                autoPlay 
+                muted 
+                loop 
+                playsInline 
+                className="w-full h-auto"
+              >
+              </video>
+            </div>
       </div>
     </div>
     );
@@ -27,41 +37,3 @@ function IntroductionBaseCardComponent() {
         </>
     )
 }
-
-function IntroductionTopExpandableCardComponent() {
-    return (
-        <div className="mt-16">
-            <hr className="border-gray-300 border-t-2"/>
-            <ul className="mt-2 space-y-4">
-                <li className="text-lg font-bold">
-                    - Track applications and previously applied companies.
-                </li>
-                <li className="flex text-lg font-bold">
-                    - Move applications to the 
-                    <ArchiveBoxIcon className="size-6 mx-1 text-blue-500" />
-                    <p className="text-blue-700">review</p>, 
-                    <CheckIcon className="size-6 mx-1 text-green-600" />
-                    <p className="text-green-800">completed</p>, or 
-                    <TrashIcon className="size-6 mx-1 text-red-500" />
-                    <p className="text-red-700">deleted &nbsp;</p>pages.
-                </li>
-                <li className="text-lg font-bold flex items-center gap-2">
-                    - Filter for                     
-                        <div className="font-bold h-8 px-2 bg-indigo-400 text-white flex items-center justify-center">Entry</div>
-                    , 
-                        <div className="font-bold h-8 px-2 bg-emerald-400 text-white flex items-center justify-center">Junior</div>
-                    , and
-                        <div className="font-bold h-8 px-2 bg-yellow-400 text-white flex items-center justify-center">Mid</div>
-                    level roles.
-                </li>
-            </ul>
-            <div className="mt-4">
-                <hr className="border-gray-300 border-t-2 mb-2"/>
-            </div>
-        </div>
-    )
-}
-
-
-
-
