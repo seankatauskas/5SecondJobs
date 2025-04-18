@@ -25,15 +25,10 @@ export function IntroductionCard({ className}) {
 
 function IntroductionBaseCardComponent() {
     return (
-        <>
-            <div className="flex pb-2 text-base font-bold text-white">
-                <div className="w-8 h-8  flex items-center justify-center"></div>
-                <div className="w-8 h-8  flex items-center justify-center"></div>
-                <div className="w-8 h-8  flex items-center justify-center"></div>
-            </div>
+        <div className="pt-6 sm:pt-8">
             <h1 className="text-5xl font-semibold text-center">Filter Out the Noise,</h1>
             <h1 className="text-5xl font-semibold mb-6 text-center">Discover Roles That Fit You</h1>
             <h2 className="text-xl text-center">A job tracker that enables you to decide whether to pursue a role in 5 seconds.</h2>
-        </>
+        </div>
     )
 }
