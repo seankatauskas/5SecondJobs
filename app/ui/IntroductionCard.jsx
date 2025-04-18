@@ -6,7 +6,7 @@ export function IntroductionCard({ className}) {
     <div className={`px-5 md:px-8 pb-12 ${className}`}>
       <div className="flex-col">
             <IntroductionBaseCardComponent />
-            <div className="mt-12 w-full max-w-4xl mx-auto overflow-hidden border-2 border-gray-300">
+            <div className="mt-8 sm:mt-12 w-full max-w-4xl mx-auto overflow-hidden border-2 border-gray-300">
               <video 
                 src="/5SecondJobs_Demo.mp4" 
                 autoPlay 
