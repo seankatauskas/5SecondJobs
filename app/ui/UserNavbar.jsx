@@ -31,15 +31,6 @@ export default function UserNavbar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center h-full pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <div className="cursor-pointer hover:bg-gray-700 px-2 py-1 text-gray-600 hover:text-white">
-                <button
-                  type="button"
-                  className="flex items-center justify-center"
-                >
-                  <span className="sr-only">Settings</span>
-                  <Cog8ToothIcon aria-hidden="true" className="size-6" />
-                </button>
-            </div>
             <SignOut />
           </div>
         </div>
