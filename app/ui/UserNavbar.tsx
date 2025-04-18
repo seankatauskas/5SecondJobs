@@ -11,7 +11,6 @@ export default function UserNavbar() {
       <div className="px-5 md:px-8">
         <div className="relative flex items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            {/* Mobile menu button*/}
             <DisclosureButton className="group relative inline-flex items-center justify-center text-gray-400">
               <span className="sr-only">Open main menu</span>
               <Bars3Icon aria-hidden="true" className="block size-6 group-data-open:hidden" />

@@ -1,7 +1,11 @@
 const shimmer =
   'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
 
-export function CardSkeleton({search = false}) {
+type CardSkeletonProps = {
+    search?: boolean
+}
+
+export function CardSkeleton({search = false}: CardSkeletonProps) {
   return (
     <div
       className={`${shimmer} relative overflow-hidden border-4 border-gray-200 shadow-sm mb-2 px-5 md:px-8 pb-6`}
@@ -56,7 +60,11 @@ export function FilterSkeleton() {
     )
 }
 
-export function CardsSkeleton({search}) {
+type CardsSkeletonProps = {
+    search?: boolean
+}
+
+export function CardsSkeleton({search}: CardsSkeletonProps) {
   return (
     <>
         {[...Array(20).keys()].map(key => <CardSkeleton key={key} search={search}/>)}
