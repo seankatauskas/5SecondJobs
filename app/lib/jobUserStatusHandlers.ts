@@ -1,6 +1,6 @@
 'use client'
 
-export async function addUserJobStatus (job_id, status) {
+export async function addUserJobStatus (job_id: string, status: string) {
     const response = await fetch(`/api/jobs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -13,7 +13,7 @@ export async function addUserJobStatus (job_id, status) {
     }
 };
 
-export async function changeJobUserStatus (job_id, status) {
+export async function changeJobUserStatus (job_id: string, status: string) {
     const response = await fetch(`/api/jobs/update`, { 
         method: 'PATCH', 
         headers: { 'Content-Type': 'application/json' },

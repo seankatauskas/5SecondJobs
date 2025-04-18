@@ -1,6 +1,8 @@
-export default function normalizeFilters(filters) {
+import type { NormalizedFilters } from '@/app/types'
+
+export default function normalizeFilters(filters: {[key: string]: string | string[] | undefined }) : NormalizedFilters {
   return {
-    search: filters.search || '',
+    search: filters.search as string || '',
     location: Array.isArray(filters.location) 
       ? filters.location 
       : filters.location ? [filters.location] : [],
@@ -10,8 +12,8 @@ export default function normalizeFilters(filters) {
   };
 }
 
-export function configureFilters(searchParams) {
-    const filters = {}
+export function configureFilters(searchParams: URLSearchParams): Record<string, string | string[]> {
+    const filters: Record<string, string | string[]> = {}
     for (const [key, value] of searchParams.entries()) {
         if (key === 'search') {
             filters[key] = value
