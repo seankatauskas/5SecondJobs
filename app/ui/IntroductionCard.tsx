@@ -1,6 +1,8 @@
-import { ArchiveBoxIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/solid'
+interface IntroductionCardProps {
+    className: string
+}
 
-export function IntroductionCard({ className}) {
+export function IntroductionCard({ className }: IntroductionCardProps) {
      
     return (
     <div className={`px-5 md:px-8 pb-12 ${className}`}>

@@ -6,5 +6,14 @@ export type NormalizedFilters = {
   experience: string[];
 }
 
+export type Filters = {
+  search?: string;
+  location?: string[];
+  experience?: string[];
+}
+
 export type PageType = 'search' | 'reviewed' | 'completed'
 
+export type PageParam = string | number
+
+export type QueryKey = [string, PageType, NormalizedFilters]

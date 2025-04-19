@@ -5,27 +5,34 @@ export default function normalizeFilters(filters: {[key: string]: string | strin
     search: filters.search as string || '',
     location: Array.isArray(filters.location) 
       ? filters.location 
-      : filters.location ? [filters.location] : [],
+      : filters.location ? filters.location.split(',') : [],
     experience: Array.isArray(filters.experience) 
       ? filters.experience 
-      : filters.experience ? [filters.experience] : []
+      : filters.experience ? filters.experience.split(',') : []
   };
 }
 
-export function configureFilters(searchParams: URLSearchParams): Record<string, string | string[]> {
-    const filters: Record<string, string | string[]> = {}
-    for (const [key, value] of searchParams.entries()) {
-        if (key === 'search') {
-            filters[key] = value
-        } 
-        else if (key !== 'cursor') {
-            if (value !== "") {
-                filters[key] = value.split(",")
-            } else {
-                filters[key] = []
-            }
-        }
+export function configureFilters(searchParams: URLSearchParams): NormalizedFilters {
+    const location = searchParams.get('location')
+    const experience = searchParams.get('experience')
+
+    const filters: NormalizedFilters = {
+        search: searchParams.get('search') || '',
+        location: location ? location.split(',') : [],
+        experience: experience ? experience.split(',') : [],
     }
+
     return filters
+}
+
+
+export function filtersToURLSearchParams(filters: NormalizedFilters): URLSearchParams {
+    const params = new URLSearchParams()
+
+    params.set('search', filters.search)
+    params.set('location', filters.location.join(','))
+    params.set('experience', filters.experience.join(','))
+
+    return params
 }
 

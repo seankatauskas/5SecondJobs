@@ -37,13 +37,15 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
         query.delete('location');
         query.delete('experience');
 
-        newFilters.location.forEach(loc => {
-            if (loc) query.append('location', loc);
-        });
+        if (newFilters.location.length > 0) {
+            const locationString = newFilters.location.filter(Boolean).join(',');
+            query.set('location', locationString);
+        }
 
-        newFilters.experience.forEach(exp => {
-            if (exp) query.append('experience', exp);
-        });
+        if (newFilters.experience.length > 0) {
+            const experienceString = newFilters.experience.filter(Boolean).join(',');
+            query.set('experience', experienceString);
+        }
 
         if (newFilters.location.length !== 0 || newFilters.experience.length !== 0) {
             window.history.replaceState({}, '', `?${query.toString()}`);
@@ -77,13 +79,15 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
           query.set('search', debouncedSearch);
         }
 
-        filters.location.forEach(loc => {
-          if (loc) query.append('location', loc);
-        });
+        if (filters.location.length > 0) {
+            const locationString = filters.location.filter(Boolean).join(',');
+            query.set('location', locationString);
+        }
 
-        filters.experience.forEach(exp => {
-          if (exp) query.append('experience', exp);
-        });
+        if (filters.experience.length > 0) {
+            const experienceString = filters.experience.filter(Boolean).join(',');
+            query.set('experience', experienceString);
+        }
 
         const currentSearch = new URLSearchParams(window.location.search);
         if (query.toString() !== currentSearch.toString()) {
