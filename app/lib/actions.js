@@ -119,6 +119,7 @@ function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, 
     }
 }
 
+
 export async function getCount(pageType, session, filters = {}) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL })
     const { joins, whereClause, values: filterValues } = buildFilterJoinsAndConditions(filters, null, pageType, true)

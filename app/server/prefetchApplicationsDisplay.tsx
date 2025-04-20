@@ -4,16 +4,16 @@ import { dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query"
 import queryParamsPageType from '@/app/lib/appDisplayHelpers' 
 import { getCount } from '@/app/lib/actions'
 import { auth } from '@/auth'
-import type { Filters, PageType } from '@/app/types'
+import type { NormalizedFilters, PageType } from '@/app/types'
 
 type Props = {
     pageType: PageType
-    filters: Filters
+    filters: NormalizedFilters
 }
 
 export default async function PrefetchApplicationsDisplay({ pageType, filters }: Props) {
     const session = await auth()
-    const count = getCount(pageType, session, filters)
+    const count = await getCount(pageType, session, filters)
 
     const isPrefetch = true
     const [queryKey, queryFn] = queryParamsPageType(pageType, isPrefetch, filters)

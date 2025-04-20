@@ -12,16 +12,24 @@ import { useDebounce } from 'use-debounce'
 import FilterUI from '@/app/ui/FilterBar'
 import { CardsSkeleton } from '@/app/ui/skeletons'
 
+import type { PageType, NormalizedFilters, CardData } from '@/app/types'
+
 const override = {
   display: "block",
   margin: "1rem auto",
   borderColor: "gray",
 }
 
-export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
+interface ApplicationsDisplayProps {
+    pageType: PageType
+    serverFilters: NormalizedFilters
+    count: number
+}
+
+export default function ApplicationsDisplay({ pageType, serverFilters, count}: ApplicationsDisplayProps) {
     const [filters, setFilters] = useState(serverFilters)
-    const [activeId, setActiveId] = useState(0)
-    const [removingId, setRemovingId] = useState(null)
+    const [activeId, setActiveId] = useState('')
+    const [removingId, setRemovingId] = useState<string | null>(null)
     const router = useRouter()
     const queryClient = useQueryClient()
 
@@ -29,7 +37,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
 
     const [debouncedSearch] = useDebounce(filters.search, 500)
 
-    const handleFilterChange = (newFilters) => {
+    const handleFilterChange = (newFilters: NormalizedFilters) => {
         setFilters(newFilters)
 
         const query = new URLSearchParams(window.location.search);
@@ -52,19 +60,34 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
         }
     }
 
-    const handleRemoval = (applicationId) => {
-        setRemovingId(applicationId)
+    type InfinitePage = {
+        nextCursor: string | number
+        data: CardData[]
+    }
 
-        setTimeout(() => {
-            queryClient.setQueryData(queryKey, (data) => ({
-                pages: data.pages.map((page) => ({
-                    nextCursor: page.nextCursor,
-                    data: page.data.filter((app) => app.id !== applicationId)
-                })),
-                pageParams: data.pageParams,
-            }))
-            setRemovingId(null)
-        }, 300)
+    type InfiniteApps = {
+        pages: InfinitePage[]
+        pageParams: string | number
+    }
+
+    const handleRemoval = (applicationId: string) => {
+      setRemovingId(applicationId)
+
+      setTimeout(() => {
+        queryClient.setQueryData(queryKey, (data) => {
+          const typedData = data as InfiniteApps
+
+          return {
+            pages: typedData.pages.map((page) => ({
+              nextCursor: page.nextCursor,
+              data: page.data.filter((app) => app.id !== applicationId)
+            })),
+            pageParams: typedData.pageParams
+          }
+        })
+
+        setRemovingId(null)
+      }, 300)
     }
 
     useEffect(() => {
@@ -91,7 +114,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
 
         const currentSearch = new URLSearchParams(window.location.search);
         if (query.toString() !== currentSearch.toString()) {
-          router.replace(`?${query.toString()}`, undefined, { shallow: true });
+          router.replace(`?${query.toString()}`);
         }
     }, [debouncedSearch, filters.location, filters.experience, router]);
 
@@ -108,14 +131,13 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
         error,
         fetchNextPage,
         hasNextPage,
-        isFetching,
         isFetchingNextPage,
         status,
     } = useInfiniteQuery({
         queryKey,
         queryFn,
         initialPageParam: 0,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        getNextPageParam: (lastPage: InfinitePage) => lastPage.nextCursor,
     })
 
     const { ref, inView } = useInView()
@@ -124,7 +146,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
         if (inView) {
           fetchNextPage()
         }
-      }, [inView])
+      }, [inView, fetchNextPage])
 
     return (
   <>
@@ -157,7 +179,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
                 data={application} 
                 isActive={activeId === application.id}
                 onShow={() => {
-                  setActiveId(activeId === application.id ? 0 : application.id);
+                  setActiveId(activeId === application.id ? '' : application.id);
                 }}
                 handleRemoval={handleRemoval}
                 pageType={pageType}
@@ -169,7 +191,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
       </React.Fragment>
     ))}
 
-    <div ref={ref} className="" disabled={!hasNextPage || isFetchingNextPage}>
+    <div ref={ref}>
       {isFetchingNextPage ? (
         <SquareLoader
           color={"#e0e0e0"}
@@ -180,7 +202,7 @@ export default function ApplicationsDisplay({ pageType, serverFilters, count}) {
           data-testid="loader"
         />
       ) : hasNextPage ? (
-        'Load More'
+        <div></div>
       ) : (
         <div className='mb-4'></div>
       )}
