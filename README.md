@@ -23,3 +23,6 @@ I used Next.js as a full-stack framework to build both the React frontend and th
 
 I deployed the web application to Vercel using a serverless setup and I'm hosting my serverless Postgres database on Neon Tech.
 
+## Read Further
+
+[Blog Post](https://www.seankatauskas.xyz/blog/5SecondJobs)
