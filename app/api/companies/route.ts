@@ -1,10 +1,10 @@
 'use server'
 
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { Pool } from '@neondatabase/serverless'
 
-export async function PUT(req) {
+export async function PUT(req: NextRequest) {
   const session = await auth()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

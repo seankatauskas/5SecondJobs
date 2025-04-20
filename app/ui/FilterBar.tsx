@@ -3,7 +3,16 @@ import DropdownCheckboxMenu from './DropdownCheckboxMenu'
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid'
 import { fetchApplicationsCount } from '@/app/lib/fetchApplications'
 
-export default function FilterUI({ initialCount, initialFilters, onFilterChange, pageType }) {
+import type { PageType, Filters, NormalizedFilters } from '@/app/types'
+
+interface FilterUIProps {
+    initialCount: number
+    initialFilters: Filters
+    onFilterChange: (newValues: NormalizedFilters) => void
+    pageType: PageType
+}
+
+export default function FilterUI({ initialCount, initialFilters, onFilterChange, pageType }: FilterUIProps) {
   const [filters, setFilters] = useState({
     search: initialFilters.search || '',
     location: initialFilters.location || [],
@@ -18,28 +27,28 @@ export default function FilterUI({ initialCount, initialFilters, onFilterChange,
             setCount(count)
         }
         getCount()
-  }, [filters])
+  }, [filters, pageType])
 
-  const updateFilters = (newFilters) => {
+  const updateFilters = (newFilters: NormalizedFilters) => {
     setFilters(newFilters)
     onFilterChange(newFilters)
   }
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     updateFilters({
       ...filters,
       search: e.target.value
     })
   }
 
-  const handleLocationChange = (locations) => {
+  const handleLocationChange = (locations: string[]) => {
     updateFilters({
       ...filters,
       location: locations
     })
   }
 
-  const handleExperienceChange = (experiences) => {
+  const handleExperienceChange = (experiences: string[]) => {
     updateFilters({
       ...filters,
       experience: experiences

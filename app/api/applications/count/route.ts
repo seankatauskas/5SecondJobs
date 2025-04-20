@@ -1,23 +1,22 @@
 'use server'
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getApplications } from '@/app/lib/actions'
+import { getCount } from '@/app/lib/actions'
 import { configureFilters } from '@/app/lib/filterHelpers'
 
-
-export async function GET(req) {
+export async function GET(req: NextRequest) {
     const session = await auth();
     if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const searchParams = req.nextUrl.searchParams
-    const currentCursor = req.nextUrl.searchParams.get('cursor');
+    const pageType = req.nextUrl.searchParams.get('pagetype');
     const filters = configureFilters(searchParams)
 
     try {
-        const data = await getApplications('search', session, currentCursor, filters)
+        const data = await getCount(pageType, session, filters)
         return NextResponse.json(data);
     } catch (error) {
         if (error instanceof Error) {

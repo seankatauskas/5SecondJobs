@@ -1,26 +1,34 @@
 import { useState, useEffect, useRef } from "react"
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
+interface Props {
+    label: string
+    name: string
+    options: {[key: string]: string}[]
+    value: string[]
+    onChange: (newValues: string[]) => void
+}
+
 export default function DropdownCheckboxMenu({
   label,
   options = [],
   name,
   value = [],
   onChange
-}) {
+}: Props) {
   const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
 
-  const handleChange = (e) => {
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const changedValue = e.target.value
     const newSelectedValues = e.target.checked
       ? [...value, changedValue]
       : value.filter((val) => val !== changedValue)
-    
+   
     onChange(newSelectedValues)
   }
 
-  const clearSelections = (e) => {
+  const clearSelections = (e: React.MouseEvent<SVGSVGElement>) => {
     e.stopPropagation()
     setIsOpen(false)
     onChange([])
@@ -29,8 +37,8 @@ export default function DropdownCheckboxMenu({
   const hasSelections = value.length > 0
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false)
       }
     }
