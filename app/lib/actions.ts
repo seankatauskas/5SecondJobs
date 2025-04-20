@@ -1,8 +1,11 @@
 'use server'
 
 import { auth } from '@/auth'
+import type { Session } from 'next-auth'
 import { Pool } from '@neondatabase/serverless'
 import { mergeApplicationData, encodeCursor, decodeCursor } from '@/app/lib/appApiHelpers'
+import type { NormalizedFilters, PageType } from '@/app/types' 
+import { locationMap, experienceMap } from '@/app/constants'
 
 export async function fetchGuestApplications() {
     const response = await fetch(`/api/applications/guest`, {
@@ -13,7 +16,7 @@ export async function fetchGuestApplications() {
     return response.json()
 }
 
-export async function prefetchApplications(queryKey) {
+export async function prefetchApplications(queryKey: {[key: string]: any}) {
     const pageType = queryKey.queryKey[1]
     const filters = queryKey.queryKey[2]
     const pageParam = queryKey.pageParam
@@ -36,11 +39,16 @@ export async function prefetchApplications(queryKey) {
     }
 }
 
-function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, countQuery = false) {
+function buildFilterJoinsAndConditions(
+        filters: NormalizedFilters, 
+        currentCursor: string | number | null = null,
+        pageType: PageType,
+        countQuery: boolean = false
+    ) {
     const joins = new Set()
     const conditions = []
     const values = []
-    let paramIndex
+    let paramIndex: number
     
     if (countQuery) {
         if (pageType === 'search') {
@@ -65,22 +73,9 @@ function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, 
     }
 
 
-    const locationMap = {
-        ny: 'New York, NY, USA',
-        sf: 'San Francisco, CA, USA',
-        la: 'Los Angeles, CA, USA',
-        chicago: 'Chicago, IL, USA'
-    }
-
-    const experienceMap = {
-        mid: 'Mid Level',
-        junior: 'Junior',
-        entry: 'Entry Level/New Grad'
-    }
-
     if (Array.isArray(filters.location) && filters.location.length > 0) {
         const locations = filters.location
-            .map(key => locationMap[key])
+            .map(key => locationMap[key as keyof typeof locationMap])
             .filter(Boolean)
 
         if (locations.length > 0) {
@@ -94,7 +89,7 @@ function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, 
 
     if (Array.isArray(filters.experience) && filters.experience.length > 0) {
         const experiences = filters.experience
-            .map(key => experienceMap[key])
+            .map(key => experienceMap[key as keyof typeof experienceMap])
             .filter(Boolean)
 
         if (experiences.length > 0) {
@@ -120,9 +115,13 @@ function buildFilterJoinsAndConditions(filters, currentCursor = null, pageType, 
 }
 
 
-export async function getCount(pageType, session, filters = {}) {
+export async function getCount(pageType: PageType, session: Session, filters: NormalizedFilters) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL })
     const { joins, whereClause, values: filterValues } = buildFilterJoinsAndConditions(filters, null, pageType, true)
+
+    if (!session.user) {
+        throw new Error('User is not authenticated')
+    }
 
     let query
     let values
@@ -161,7 +160,7 @@ export async function getCount(pageType, session, filters = {}) {
     }
 }
 
-export async function getApplications(pageType, session, currentCursor, filters = {}) {
+export async function getApplications(pageType: PageType, session: Session, currentCursor: string | number | null, filters: NormalizedFilters) {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL })
     const pageSize = 20
 
@@ -169,6 +168,10 @@ export async function getApplications(pageType, session, currentCursor, filters 
 
     let query
     let values
+
+    if (!session.user) {
+        throw new Error('User is not authenticated')
+    }
 
     try {
         if (currentCursor == 0) {
@@ -203,7 +206,7 @@ export async function getApplications(pageType, session, currentCursor, filters 
                 values = [session.user.id, pageType, pageSize, ...filterValues]
             }
         } else {
-            const { updated_date, id } = decodeCursor(currentCursor)
+            const { updated_date, id } = decodeCursor(currentCursor as string)
             const updated_at = new Date(updated_date)
 
             query = `

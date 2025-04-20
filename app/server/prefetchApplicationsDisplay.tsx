@@ -13,6 +13,10 @@ type Props = {
 
 export default async function PrefetchApplicationsDisplay({ pageType, filters }: Props) {
     const session = await auth()
+    if (!session) {
+        throw new Error("No session found");
+    }
+
     const count = await getCount(pageType, session, filters)
 
     const isPrefetch = true

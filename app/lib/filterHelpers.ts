@@ -9,7 +9,7 @@ export default function normalizeFilters(filters: {[key: string]: string | strin
     experience: Array.isArray(filters.experience) 
       ? filters.experience 
       : filters.experience ? filters.experience.split(',') : []
-  };
+  }
 }
 
 export function configureFilters(searchParams: URLSearchParams): NormalizedFilters {
